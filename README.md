@@ -1,8 +1,6 @@
 # 📡 Wi-Fi Network Health Monitor Dashboard
 
 
-## 🎯 Project Overview
-
 The **Wi-Fi Network Health Monitor** is a web application that takes 5 network parameters as input, runs a rule-based scoring engine, and produces:
 
 - A **Network Health Score** (0–100)
