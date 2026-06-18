@@ -203,33 +203,3 @@ curl -X POST http://localhost:3000/api/network/analyze \
 }
 ```
 
----
-
-## 🔮 Future Improvements
-
-1. **Real Network Data**: Use `node-wifi` package to read actual Wi-Fi metrics from the system.
-2. **Database Integration**: Replace JSON with SQLite or MongoDB for production-scale storage.
-3. **User Authentication**: Add login/signup so multiple users can track their networks.
-4. **Email Alerts**: Send email notifications when network drops below a threshold.
-5. **Historical Charts**: Show trends over time using line charts.
-6. **Multi-AP Support**: Monitor multiple access points in an enterprise setup.
-7. **WebSocket Live Updates**: Push real-time metrics without page refresh.
-8. **REST API Documentation**: Add Swagger/OpenAPI docs for the API.
-9. **Unit Tests**: Add Jest tests for the scoring engine logic.
-10. **Docker**: Containerize the app for easy deployment.
-
----
-
-## 📝 License
-
-MIT License — Free to use for educational and portfolio purposes.
-
----
-
-## 👤 Author
-
-Built as a portfolio project for fresher interviews targeting **WLAN QA Engineer** roles at Wi-Fi analytics companies like **Aprecomm**.
-
----
-
-> 💡 **Tip**: If you're preparing for a WLAN QA interview, read the [INTERVIEW_GUIDE.md](./INTERVIEW_GUIDE.md) for 20 interview questions with detailed answers!
