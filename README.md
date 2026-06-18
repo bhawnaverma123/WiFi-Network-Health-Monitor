@@ -1,7 +1,5 @@
 # 📡 Wi-Fi Network Health Monitor Dashboard
 
-> A full-stack WLAN monitoring dashboard that simulates how companies like **Aprecomm** analyze Wi-Fi network quality and user experience. Built with **Node.js, Express.js, and Vanilla JavaScript**.
-
 ---
 
 ## 🎯 Project Overview
