@@ -1,6 +1,5 @@
 # 📡 Wi-Fi Network Health Monitor Dashboard
 
----
 
 ## 🎯 Project Overview
 
