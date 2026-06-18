@@ -203,3 +203,4 @@ curl -X POST http://localhost:3000/api/network/analyze \
 }
 ```
 
+<img width="1907" height="900" alt="image" src="https://github.com/user-attachments/assets/1cf919fe-00f0-4d84-bddb-30740eb745ec" />
