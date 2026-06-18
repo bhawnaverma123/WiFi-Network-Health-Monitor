@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Wi-Fi Network Health Monitor Dashboard - Analyze your WLAN quality and get troubleshooting recommendations in real time." />
+  <title>Wi-Fi Network Health Monitor | WLAN Dashboard</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Our custom CSS -->
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <div class="nav-logo">
+        <i class="fas fa-wifi"></i>
+      </div>
+      <div class="nav-title">
+        <span class="brand-main">NetHealth</span>
+        <span class="brand-sub">Wi-Fi Monitor</span>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <span class="nav-badge">
+        <i class="fas fa-circle pulse-dot"></i>
+        Live Monitor
+      </span>
+    </div>
+
+    <div class="nav-actions">
+      <button id="sampleDataBtn" class="btn btn-ghost" title="Load Sample Data">
+        <i class="fas fa-flask"></i>
+        <span>Sample Data</span>
+      </button>
+      <button id="refreshBtn" class="btn btn-ghost" title="Refresh Page">
+        <i class="fas fa-rotate-right"></i>
+        <span>Refresh</span>
+      </button>
+      <button id="darkModeToggle" class="btn btn-icon" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN CONTENT WRAPPER
+       ============================================================ -->
+  <main class="main-wrapper">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-satellite-dish"></i>
+          WLAN Quality Analyzer
+        </div>
+        <h1 class="hero-title">Wi-Fi Network Health<br /><span class="gradient-text">Monitor Dashboard</span></h1>
+        <p class="hero-subtitle">
+          Analyze your Wi-Fi network parameters, get an instant health score,
+          and receive smart troubleshooting recommendations.
+        </p>
+      </div>
+      <div class="hero-visual">
+        <div class="wifi-animation">
+          <div class="wifi-ring ring-1"></div>
+          <div class="wifi-ring ring-2"></div>
+          <div class="wifi-ring ring-3"></div>
+          <div class="wifi-center"><i class="fas fa-wifi"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         INPUT SECTION - Dashboard Input Form
+         ============================================================ -->
+    <section class="input-section" id="inputSection">
+      <div class="section-header">
+        <h2><i class="fas fa-sliders"></i> Network Parameters</h2>
+        <p>Enter your current network metrics to analyze health</p>
+      </div>
+
+      <form id="networkForm" class="network-form" novalidate>
+        <div class="form-grid">
+
+          <!-- Signal Strength -->
+          <div class="form-group" id="signalGroup">
+            <label for="signalStrength" class="form-label">
+              <i class="fas fa-signal"></i>
+              Wi-Fi Signal Strength
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="number"
+                id="signalStrength"
+                name="signalStrength"
+                class="form-input"
+                placeholder="e.g. 75"
+                min="0"
+                max="100"
+                required
+                aria-describedby="signalHelp"
+              />
+              <span class="input-unit">%</span>
+            </div>
+            <small class="form-help" id="signalHelp">Range: 0–100% &nbsp;|&nbsp; 90–100 = Excellent</small>
+            <span class="form-error" id="signalError"></span>
+          </div>
+
+          <!-- Latency -->
+          <div class="form-group" id="latencyGroup">
+            <label for="latency" class="form-label">
+              <i class="fas fa-clock"></i>
+              Latency (Ping)
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="number"
+                id="latency"
+                name="latency"
+                class="form-input"
+                placeholder="e.g. 45"
+                min="0"
+                required
+                aria-describedby="latencyHelp"
+              />
+              <span class="input-unit">ms</span>
+            </div>
+            <small class="form-help" id="latencyHelp">0–30ms = Excellent &nbsp;|&nbsp; Above 150ms = Poor</small>
+            <span class="form-error" id="latencyError"></span>
+          </div>
+
+          <!-- Packet Loss -->
+          <div class="form-group" id="packetGroup">
+            <label for="packetLoss" class="form-label">
+              <i class="fas fa-triangle-exclamation"></i>
+              Packet Loss
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="number"
+                id="packetLoss"
+                name="packetLoss"
+                class="form-input"
+                placeholder="e.g. 2"
+                min="0"
+                max="100"
+                step="0.1"
+                required
+                aria-describedby="packetHelp"
+              />
+              <span class="input-unit">%</span>
+            </div>
+            <small class="form-help" id="packetHelp">0–1% = Excellent &nbsp;|&nbsp; Above 5% = Poor</small>
+            <span class="form-error" id="packetError"></span>
+          </div>
+
+          <!-- Connected Devices -->
+          <div class="form-group" id="devicesGroup">
+            <label for="connectedDevices" class="form-label">
+              <i class="fas fa-laptop"></i>
+              Connected Devices
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="number"
+                id="connectedDevices"
+                name="connectedDevices"
+                class="form-input"
+                placeholder="e.g. 8"
+                min="0"
+                required
+                aria-describedby="devicesHelp"
+              />
+              <span class="input-unit">devices</span>
+            </div>
+            <small class="form-help" id="devicesHelp">1–10 = Good &nbsp;|&nbsp; Above 20 = Heavy Load</small>
+            <span class="form-error" id="devicesError"></span>
+          </div>
+
+          <!-- Router Uptime -->
+          <div class="form-group" id="uptimeGroup">
+            <label for="routerUptime" class="form-label">
+              <i class="fas fa-power-off"></i>
+              Router Uptime
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="number"
+                id="routerUptime"
+                name="routerUptime"
+                class="form-input"
+                placeholder="e.g. 48"
+                min="0"
+                required
+                aria-describedby="uptimeHelp"
+              />
+              <span class="input-unit">hours</span>
+            </div>
+            <small class="form-help" id="uptimeHelp">How long since last router restart</small>
+            <span class="form-error" id="uptimeError"></span>
+          </div>
+
+        </div><!-- end form-grid -->
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-large" id="analyzeBtn">
+            <i class="fas fa-magnifying-glass-chart"></i>
+            Analyze Network
+          </button>
+          <button type="button" class="btn btn-outline" id="clearFormBtn">
+            <i class="fas fa-eraser"></i>
+            Clear Form
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- ============================================================
+         LOADING SPINNER
+         ============================================================ -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+      <div class="loading-card">
+        <div class="spinner"></div>
+        <p>Analyzing network parameters...</p>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         RESULTS SECTION (Hidden until analysis is done)
+         ============================================================ -->
+    <section class="results-section" id="resultsSection" style="display:none;">
+
+      <!-- HEALTH SCORE BANNER -->
+      <div class="score-banner" id="scoreBanner">
+        <div class="score-circle-container">
+          <div class="score-circle" id="scoreCircle">
+            <svg class="score-svg" viewBox="0 0 120 120">
+              <circle class="score-bg" cx="60" cy="60" r="52" />
+              <circle class="score-progress" id="scoreProgress" cx="60" cy="60" r="52"
+                stroke-dasharray="326.7"
+                stroke-dashoffset="326.7" />
+            </svg>
+            <div class="score-text">
+              <span class="score-number" id="scoreNumber">0</span>
+              <span class="score-label">/ 100</span>
+            </div>
+          </div>
+        </div>
+        <div class="score-info">
+          <div class="score-status-badge" id="statusBadge">—</div>
+          <h2 class="score-title">Network Health Score</h2>
+          <p class="score-description" id="scoreDescription">Your network analysis result will appear here.</p>
+          <button class="btn btn-outline btn-sm" id="exportPdfBtn">
+            <i class="fas fa-file-pdf"></i>
+            Export Report as PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- ANALYTICS CARDS -->
+      <div class="section-header mt-section">
+        <h2><i class="fas fa-chart-bar"></i> Analytics Overview</h2>
+        <p>Individual metric scores contributing to the overall health</p>
+      </div>
+      <div class="analytics-grid" id="analyticsGrid">
+        <!-- Cards are dynamically generated by JS -->
+      </div>
+
+      <!-- RADAR CHART -->
+      <div class="chart-section">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3><i class="fas fa-chart-radar"></i> Network Performance Radar</h3>
+            <p>Visual overview of all network metrics</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3><i class="fas fa-chart-pie"></i> Score Breakdown</h3>
+            <p>Contribution of each metric to total score</p>
+          </div>
+          <div class="chart-container">
+            <canvas id="donutChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ISSUES & RECOMMENDATIONS -->
+      <div class="issues-recommendations-grid">
+
+        <!-- Issues Detected -->
+        <div class="card issues-card">
+          <div class="card-header">
+            <h3><i class="fas fa-circle-exclamation"></i> Issues Detected</h3>
+          </div>
+          <ul class="issues-list" id="issuesList">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+
+        <!-- Smart Recommendations -->
+        <div class="card recommendations-card">
+          <div class="card-header">
+            <h3><i class="fas fa-lightbulb"></i> Smart Recommendations</h3>
+          </div>
+          <ul class="recommendations-list" id="recommendationsList">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============================================================
+         ANALYSIS HISTORY SECTION
+         ============================================================ -->
+    <section class="history-section" id="historySection">
+      <div class="section-header">
+        <div>
+          <h2><i class="fas fa-clock-rotate-left"></i> Analysis History</h2>
+          <p>Last 10 network analysis results</p>
+        </div>
+        <button class="btn btn-danger-outline btn-sm" id="clearHistoryBtn">
+          <i class="fas fa-trash"></i>
+          Clear History
+        </button>
+      </div>
+
+      <div class="history-container" id="historyContainer">
+        <div class="history-empty" id="historyEmpty">
+          <i class="fas fa-inbox"></i>
+          <p>No analysis history yet.</p>
+          <span>Run your first analysis above!</span>
+        </div>
+        <div class="history-table-wrapper" id="historyTableWrapper" style="display:none;">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th><i class="fas fa-calendar"></i> Date & Time</th>
+                <th><i class="fas fa-signal"></i> Signal</th>
+                <th><i class="fas fa-clock"></i> Latency</th>
+                <th><i class="fas fa-triangle-exclamation"></i> Packet Loss</th>
+                <th><i class="fas fa-laptop"></i> Devices</th>
+                <th><i class="fas fa-heart-pulse"></i> Health Score</th>
+                <th><i class="fas fa-tag"></i> Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- end main-wrapper -->
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <i class="fas fa-wifi"></i>
+        <span>NetHealth Monitor</span>
+      </div>
+      <p>Built with ❤️ using Node.js, Express.js &amp; Vanilla JS &nbsp;|&nbsp; Fresher Interview Project</p>
+      <p class="footer-sub">Simulating WLAN monitoring like Aprecomm &nbsp;•&nbsp; For educational purposes</p>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       TOAST NOTIFICATION
+       ============================================================ -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastMessage">Operation successful!</span>
+  </div>
+
+  <!-- Our custom JavaScript -->
+  <script src="/js/main.js"></script>
+
+</body>
+</html>
